@@ -4,6 +4,12 @@ import os
 import sys
 
 
+pygame.init()
+size = width, height = 800, 400
+screen = pygame.display.set_mode(size)
+
+
+
 def load_image(name, colorkey=None):
     fullname = os.path.join('data', name)
     if not os.path.isfile(fullname):
@@ -25,71 +31,38 @@ groupDED = pygame.sprite.Group()
 groupELF = pygame.sprite.Group()
 
 
-class Elf(pygame.sprite.Sprite):
-    def __init__(self, x, y):
-        super().__init__(all_sprites)
-
-        self.image = load_image('elf.png')
-        self.rect = self.image.get_rect()
-        self.rect.x = x
-        self.rect.y = y
-
-        self.add(groupELF)
+images = (load_image('ded1.png'), load_image('ded2.png'))
 
 
 class DedMoroz(pygame.sprite.Sprite):
     def __init__(self, x, y):
         super().__init__(all_sprites)
 
-        self.images_right = [load_image('1.png'), load_image('2.png'), load_image('3.png'), load_image('4.png'),
-                             load_image('5.png'),
-                             load_image('6.png'), load_image('7.png'), load_image('8.png'), load_image('9.png'),
-                             load_image('10.png'),
-                             load_image('11.png'), load_image('12.png'), load_image('13.png'), load_image('14.png'),
-                             load_image('15.png')]
-        self.images_left = []
-
-        for image in self.images_right:
-            self.images_left.append(pygame.transform.flip(image, True, False))
-
         self.moved = 0
-        image = self.images_right[self.moved]
 
-        self.image = image
+        self.image = images[self.moved]
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
         self.add(groupDED)
 
-    def restart(self):
-        self.moved = 0
-        self.image = self.images[self.moved]
-
     def update(self):
-        if left_move or right_move:
-            if self.moved + 1 < 15:
-                self.moved += 1
-            else:
-                self.moved = 0
+        if self.moved == 0:
+            self.moved = 1
         else:
             self.moved = 0
 
+        self.image = images[self.moved]
+
         if left_move:
             self.rect = self.rect.move(-10, 0)
-            self.image = self.images_left[self.moved]
-        if right_move:
+        elif right_move:
             self.rect = self.rect.move(10, 0)
-            self.image = self.images_right[self.moved]
 
 
 if __name__ == '__main__':
-    pygame.init()
-    size = width, height = 800, 400
-    screen = pygame.display.set_mode(size)
-
     screen.fill((255, 255, 255))
-    ded = DedMoroz(0, 265)
-    elf = Elf(600, 190)
+    ded = DedMoroz(0, 250)
 
     clock = pygame.time.Clock()
 
@@ -98,6 +71,7 @@ if __name__ == '__main__':
     move = False
     running = True
     while running:
+        pygame.time.wait(300)
         screen.fill((255, 255, 255))
         pygame.draw.rect(screen, (0, 0, 0), (0, 380, 800, 20))
 
@@ -121,10 +95,9 @@ if __name__ == '__main__':
                 left_move = False
                 right_move = True
 
+
         all_sprites.update()
         all_sprites.draw(screen)
-
-        clock.tick(30)
 
         pygame.display.flip()
     pygame.quit()
