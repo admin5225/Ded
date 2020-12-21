@@ -3,11 +3,9 @@ import pygame
 import os
 import sys
 
-
 pygame.init()
 size = width, height = 800, 400
 screen = pygame.display.set_mode(size)
-
 
 
 def load_image(name, colorkey=None):
@@ -28,7 +26,6 @@ def load_image(name, colorkey=None):
 
 all_sprites = pygame.sprite.Group()
 groupDED = pygame.sprite.Group()
-
 
 images = list()
 for i in range(1, 35):
@@ -53,8 +50,17 @@ class DedMoroz(pygame.sprite.Sprite):
         else:
             self.moved += 1
 
-        self.image = images[self.moved]
+        if left_move:
+            self.rect.x -= 5
+        elif right_move:
+            self.rect.x += 5
+        elif up_move:
+            self.rect.y -= 5
+        elif down_move:
+            self.rect.y += 5
 
+
+        self.image = images[self.moved]
 
 
 if __name__ == '__main__':
@@ -63,9 +69,7 @@ if __name__ == '__main__':
 
     clock = pygame.time.Clock()
 
-    left_move = False
-    right_move = False
-    move = False
+    left_move, right_move, up_move, down_move, move = False, False, False, False, False
     running = True
     while running:
         screen.fill((255, 255, 255))
@@ -79,18 +83,21 @@ if __name__ == '__main__':
                 keys = pygame.key.get_pressed()
                 move = True
             else:
-                move = False
-                left_move = False
-                right_move = False
+                left_move, right_move, up_move, down_move, move = False, False, False, False, False
 
         if move:
             if keys[pygame.K_LEFT] or keys[pygame.K_a]:
                 left_move = True
                 right_move = False
-            if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
+            elif keys[pygame.K_RIGHT] or keys[pygame.K_d]:
                 left_move = False
                 right_move = True
-
+            elif keys[pygame.K_UP] or keys[pygame.K_w]:
+                down_move = False
+                up_move = True
+            elif keys[pygame.K_DOWN] or keys[pygame.K_s]:
+                down_move = True
+                up_move = False
 
         all_sprites.update()
         all_sprites.draw(screen)
