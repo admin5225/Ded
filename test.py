@@ -6,6 +6,7 @@ import sys
 pygame.init()
 size = width, height = 800, 400
 screen = pygame.display.set_mode(size)
+screen1 = pygame.display.set_mode(size)
 
 
 def load_image(name, colorkey=None):
@@ -25,6 +26,7 @@ def load_image(name, colorkey=None):
 
 
 all_sprites = pygame.sprite.Group()
+horizontal_borders = pygame.sprite.Group()
 groupDED = pygame.sprite.Group()
 
 images = list()
@@ -32,12 +34,19 @@ for i in range(1, 35):
     images.append(load_image(f"ded{i}.png"))
 
 
+class Plate(pygame.sprite.Sprite):
+    def __init__(self, x1, y1, x2, y2):
+        super().__init__(all_sprites)
+        self.add(horizontal_borders)
+        self.image = pygame.Surface((x2, y2))
+        self.image.fill((150, 150, 150))
+        self.rect = pygame.Rect(x1, y1, x2, y2)
+
+
 class DedMoroz(pygame.sprite.Sprite):
     def __init__(self, x, y):
         super().__init__(all_sprites)
-
         self.moved = 0
-
         self.image = images[self.moved]
         self.rect = self.image.get_rect()
         self.rect.x = x
@@ -45,6 +54,13 @@ class DedMoroz(pygame.sprite.Sprite):
         self.add(groupDED)
 
     def update(self):
+        '''if pygame.sprite.spritecollideany(self, horizontal_borders):
+            left_move = False'''
+
+        if self.rect.y < height - images[0].get_size()[1]:
+            if not up_move:
+                self.rect.y += 2
+            '''print(height - images[0].get_size()[1])'''
         if self.moved == 33:
             self.moved = 0
         else:
@@ -52,21 +68,21 @@ class DedMoroz(pygame.sprite.Sprite):
 
         if left_move:
             self.rect.x -= 5
-        elif right_move:
+        if right_move:
             self.rect.x += 5
-        elif up_move:
+        if up_move:
             self.rect.y -= 5
-        elif down_move:
+        if down_move:
             self.rect.y += 5
-
 
         self.image = images[self.moved]
 
 
 if __name__ == '__main__':
     screen.fill((255, 255, 255))
+    screen1.fill((0, 255, 0))
     ded = DedMoroz(0, 250)
-
+    Plate(600, 200, 200, 180)
     clock = pygame.time.Clock()
 
     left_move, right_move, up_move, down_move, move = False, False, False, False, False
@@ -89,15 +105,18 @@ if __name__ == '__main__':
             if keys[pygame.K_LEFT] or keys[pygame.K_a]:
                 left_move = True
                 right_move = False
-            elif keys[pygame.K_RIGHT] or keys[pygame.K_d]:
+            if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
                 left_move = False
                 right_move = True
-            elif keys[pygame.K_UP] or keys[pygame.K_w]:
+            if keys[pygame.K_UP] or keys[pygame.K_w]:
                 down_move = False
                 up_move = True
-            elif keys[pygame.K_DOWN] or keys[pygame.K_s]:
+            if keys[pygame.K_DOWN] or keys[pygame.K_s]:
                 down_move = True
                 up_move = False
+
+        if ded.rect.x == 0:
+            screen = screen1
 
         all_sprites.update()
         all_sprites.draw(screen)
