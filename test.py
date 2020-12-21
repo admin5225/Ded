@@ -28,10 +28,11 @@ def load_image(name, colorkey=None):
 
 all_sprites = pygame.sprite.Group()
 groupDED = pygame.sprite.Group()
-groupELF = pygame.sprite.Group()
 
 
-images = (load_image('ded1.png'), load_image('ded2.png'))
+images = list()
+for i in range(1, 35):
+    images.append(load_image(f"ded{i}.png"))
 
 
 class DedMoroz(pygame.sprite.Sprite):
@@ -47,17 +48,13 @@ class DedMoroz(pygame.sprite.Sprite):
         self.add(groupDED)
 
     def update(self):
-        if self.moved == 0:
-            self.moved = 1
-        else:
+        if self.moved == 33:
             self.moved = 0
+        else:
+            self.moved += 1
 
         self.image = images[self.moved]
 
-        if left_move:
-            self.rect = self.rect.move(-10, 0)
-        elif right_move:
-            self.rect = self.rect.move(10, 0)
 
 
 if __name__ == '__main__':
@@ -71,7 +68,6 @@ if __name__ == '__main__':
     move = False
     running = True
     while running:
-        pygame.time.wait(300)
         screen.fill((255, 255, 255))
         pygame.draw.rect(screen, (0, 0, 0), (0, 380, 800, 20))
 
@@ -99,5 +95,6 @@ if __name__ == '__main__':
         all_sprites.update()
         all_sprites.draw(screen)
 
+        clock.tick(10)
         pygame.display.flip()
     pygame.quit()
