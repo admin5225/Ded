@@ -27,6 +27,8 @@ def load_image(name, colorkey=None):
 all_sprites = pygame.sprite.Group()
 plates = pygame.sprite.Group()
 groupDED = pygame.sprite.Group()
+# Картинка с платформой
+plate_image = load_image('plate1.png')
 
 images = list()
 for i in range(1, 35):
@@ -34,11 +36,10 @@ for i in range(1, 35):
 
 
 class Plate(pygame.sprite.Sprite):
-    def __init__(self, x1, y1, x2, y2):
+    def __init__(self, x1, y1, x2, y2, image):
         super().__init__(all_sprites, plates)
 
-        self.image = pygame.Surface((x2, y2))
-        self.image.fill((150, 150, 150))
+        self.image = image
         self.rect = pygame.Rect(x1, y1, x2, y2)
 
 
@@ -96,7 +97,11 @@ class DedMoroz(pygame.sprite.Sprite):
 if __name__ == '__main__':
     screen.fill((255, 255, 255))
     ded = DedMoroz(0, 430)
-    plate = Plate(0, 580, 1000, 20)
+
+    # Растягивание картинки платформы до нужной длины и её создание
+    image = pygame.transform.scale(plate_image, (400, 50))
+    plate = Plate(500, 300, 200, 100, image)
+
     clock = pygame.time.Clock()
 
     fons = [load_image('fon1.jpg'), load_image('fon2.jpg')]
